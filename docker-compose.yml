@@ -1,0 +1,33 @@
+name: keycloak_with_nginx
+services:
+  keycloak_service:
+    build: ./keycloak
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://172.22.0.5:5432/keycloak #Postgres IP from matoosfe_network 
+      KC_DB_URL_DATABASE: keycloak
+      KC_DB_PASSWORD: Prueba2o24$
+      KC_DB_USERNAME: postgres
+      KC_DB_SCHEMA: public
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin2o24..
+      KC_PROXY: edge
+      KC_HOSTNAME_ADMIN_URL: https://localhost:8443
+      KC_HOSTNAME_URL: https://localhost:8443
+    command: start --hostname https://localhost:8443
+    networks: 
+      - matoosfe_network
+    
+  nginx_service:
+    build: ./nginx
+    ports:
+      - "8080:80"
+      - "8443:443"
+    depends_on:
+      - keycloak_service
+    networks:
+      - matoosfe_network
+
+networks:
+  matoosfe_network:
+    external: true
